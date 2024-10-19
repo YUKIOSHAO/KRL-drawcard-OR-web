@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>假面骑士抽卡模拟</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="card-container">
+    <div id="draw-results"></div>
+    <div class="button-panel">
+      <button id="single-draw">单抽</button>
+      <button id="ten-draw">十连抽</button>
+      <button id="refresh-button">刷新</button>
+    </div>
+    <audio id="draw-sound" preload="auto" style="display:none;"></audio>
+    <audio id="ten-draw-sound" preload="auto" style="display:none;"></audio>
+    <audio id="refresh-sound" preload="auto" style="display:none;"></audio>
+    <audio id="men-sound" preload="auto" style="display:none;"></audio>
+    <audio id="zio-sound" preload="auto" style="display:none;"></audio>
+  </div>
+  <script>
+    // 模拟角色数据库
+    const characters = [];
+    const riderNames = ['Kuuga', 'Agito', 'Ryuki', '555 (Faiz)', 'Blade', 'Kabuto', 'Den-O', 'Hibiki', 'Kiva', 'Decade', 'Double (W)', 'OOO (Ooo)', 'Fourze', 'Wizard', 'Gaim', 'Drive', 'Ghost', 'Ex-Aid', 'Build', 'Zi-O'];
+    for (let i = 0; i < 20; i++) {
+      const rarity = Math.random() < 0.2? '稀有' : '普通';
+      const attribute = riderNames[i];
+      const name = '仮面ライダー';
+      const image = `jmqs/${i + 1}.jpg`;
+      characters.push({ name, attribute, rarity, image });
+    }
+
+    // 单抽函数
+    function singleDraw() {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      const character = characters[randomIndex];
+      const card = document.createElement('div');
+      card.classList.add('draw-card');
+      const img = document.createElement('img');
+      img.src = character.image;
+      const nameAndAttribute = document.createElement('div');
+      const nameElement = document.createElement('h3');
+      nameElement.textContent = character.name;
+      const attributeElement = document.createElement('p');
+      attributeElement.textContent = character.attribute;
+      nameAndAttribute.appendChild(nameElement);
+      nameAndAttribute.appendChild(attributeElement);
+      card.appendChild(img);
+      card.appendChild(nameAndAttribute);
+      const drawResults = document.getElementById('draw-results');
+      // 每行最多五个
+      if (drawResults.children.length % 5 === 0) {
+        drawResults.appendChild(document.createElement('br'));
+      }
+      drawResults.appendChild(card);
+      card.style.opacity = 1;
+      card.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        card.style.transform = 'scale(1)';
+      }, 300);
+      // 单抽也刷新一次
+      drawResults.innerHTML = '';
+      drawResults.appendChild(card);
+
+      // 播放音效
+      const drawSound = document.getElementById('draw-sound');
+      drawSound.src = 'audio/jmqs.mp3';
+      console.log('Trying to play draw sound. State:', drawSound.readyState);
+      try {
+        drawSound.play();
+      } catch (error) {
+        console.error('Error playing draw sound:', error);
+      }
+      if (character.image === 'jmqs/10.jpg') {
+        const menSound = document.getElementById('men-sound');
+        menSound.src = 'audio/men.mp3';
+        console.log('Trying to play men sound. State:', menSound.readyState);
+        try {
+          menSound.play();
+        } catch (error) {
+          console.error('Error playing men sound:', error);
+        }
+      } else if (character.image === 'jmqs/20.jpg') {
+        const zioSound = document.getElementById('zio-sound');
+        zioSound.src = 'audio/zio.mp3';
+        console.log('Trying to play zio sound. State:', zioSound.readyState);
+        try {
+          zioSound.play();
+        } catch (error) {
+          console.error('Error playing zio sound:', error);
+        }
+      }
+    }
+
+    // 十连抽函数
+    function tenDraw() {
+      const drawResults = document.getElementById('draw-results');
+      drawResults.innerHTML = '';
+      for (let i = 0; i < 10; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        const character = characters[randomIndex];
+        const card = document.createElement('div');
+        card.classList.add('draw-card');
+        const img = document.createElement('img');
+        img.src = character.image;
+        const nameAndAttribute = document.createElement('div');
+        const nameElement = document.createElement('h3');
+        nameElement.textContent = character.name;
+        const attributeElement = document.createElement('p');
+        attributeElement.textContent = character.attribute;
+        nameAndAttribute.appendChild(nameElement);
+        nameAndAttribute.appendChild(attributeElement);
+        card.appendChild(img);
+        card.appendChild(nameAndAttribute);
+        // 每行最多五个
+        if ((drawResults.children.length + i) % 5 === 0) {
+          drawResults.appendChild(document.createElement('br'));
+        }
+        drawResults.appendChild(card);
+        card.style.opacity = 0;
+        setTimeout(() => {
+          card.style.opacity = 1;
+          card.style.transform = 'scale(1.2)';
+          setTimeout(() => {
+            card.style.transform = 'scale(1)';
+          }, 300);
+        }, i * 200);
+      }
+
+      // 播放音效
+      const tenDrawSound = document.getElementById('ten-draw-sound');
+      tenDrawSound.src = 'audio/jiazai.mp3';
+      console.log('Trying to play ten-draw sound. State:', tenDrawSound.readyState);
+      try {
+        tenDrawSound.play();
+      } catch (error) {
+        console.error('Error playing ten-draw sound:', error);
+      }
+    }
+
+    // 刷新函数
+    function refreshPage() {
+      const refreshSound = document.getElementById('refresh-sound');
+      refreshSound.src = 'audio/final.mp3';
+      console.log('Trying to play refresh sound. State:', refreshSound.readyState);
+      try {
+        refreshSound.play();
+      } catch (error) {
+        console.error('Error playing refresh sound:', error);
+      }
+      location.reload();
+    }
+
+    // 绑定按钮点击事件
+    document.getElementById('single-draw').addEventListener('click', singleDraw);
+    document.getElementById('ten-draw').addEventListener('click', tenDraw);
+    document.getElementById('refresh-button').addEventListener('click', refreshPage);
+  </script>
+</body>
+
+</html>
