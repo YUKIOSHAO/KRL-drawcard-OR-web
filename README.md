@@ -1,2 +1,5 @@
-I want to create a webpage similar to ‘mikutap’. I hope to complete it in the future. The versions above are incomplete.
+我果然是条懒狗
+下集预告的网页做了一半（看看自己时候有空再完善）
+其他的网页优化也做了一半（这个还差一点 等有空的时候有空再说）
 
+!!!
