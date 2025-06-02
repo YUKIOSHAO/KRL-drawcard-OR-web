@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学公式背景按钮与瓶子页面</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #2a4b4f;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .main-container {
+            position: relative;
+            width: 90%;
+            max-width: 1400px;
+            margin: 10px auto;
+            display: grid;
+            grid-template-rows: auto;
+            gap: 10px;
+            padding: 10px;
+        }
+        
+        .math-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(42,75,79,0.9), rgba(42,75,79,0.9)), 
+                              url('https://i.imgur.com/3sJ6z6L.jpg');
+            background-size: cover;
+            background-position: center;
+            filter: blur(2px);
+            opacity: 0.85;
+            z-index: -1;
+        }
+        
+        /* 瓶子样式 */
+        .bottles-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        
+        .bottle {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            min-height: 280px;
+        }
+        
+        .bottle-container {
+            width: 100%;
+            max-width: 130px;
+            height: 280px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.3s;
+        }
+        
+        /* 顶部白色瓶盖 */
+        .top-cap {
+            width: 70%;
+            height: 35px;
+            background: linear-gradient(to bottom, #f8f8f8 0%, #e0e0e0 100%);
+            margin: 0 auto;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 2px solid #333;
+            position: relative;
+            z-index: 3;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .top-cap::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 12px;
+            background: linear-gradient(to bottom, #e8e8e8 0%, #d0d0d0 100%);
+            border-radius: 4px;
+        }
+
+        /* 中间黑色边框区域 */
+        .middle-frame {
+            width: 100%;
+            height: 210px;
+            background: linear-gradient(to right, #1a1a1a 0%, #333 50%, #1a1a1a 100%);
+            padding: 6px;
+            box-sizing: border-box;
+            border-radius: 5px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 灰色主体部分 */
+        .gray-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #a9a9a9 0%, #707070 100%);
+            border-radius: 0 0 10px 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* 高光效果 */
+        .gray-body::before {
+            content: '';
+            position: absolute;
+            top: -5%;
+            left: 15%;
+            width: 70%;
+            height: 110%;
+            background: linear-gradient(to right, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.1) 100%);
+            transform: skewX(-15deg);
+            border-radius: 50%;
+        }
+
+        /* 底部黑色刻度区域 */
+        .bottom-scale {
+            width: 100%;
+            height: 35px;
+            background: linear-gradient(to bottom, #222 0%, #000 100%);
+            position: absolute;
+            bottom: 0;
+            border-radius: 0 0 10px 10px;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 刻度线 */
+        .scale-lines {
+            width: 85%;
+            height: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .scale-line {
+            width: 1.5px;
+            height: 100%;
+            background-color: #555;
+            border-radius: 1px;
+        }
+        
+        .scale-line:nth-child(odd) {
+            height: 70%;
+        }
+        
+        /* 瓶身底部阴影 */
+        .bottle-shadow {
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 115%;
+            height: 25px;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%,rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            z-index: 1;
+            transition: transform 0.3s;
+        }
+        
+        .bottle-container:hover .bottle-shadow {
+            transform: translateX(-50%) scale(1.05);
+        }
+        
+        /* 瓶子内的按钮 - 改为正方形 */
+        .inner-button {
+            width: 60%;
+            height: 60px; /* 高度增加，使按钮成为正方形 */
+            border-radius: 6px;
+            margin-bottom: 25px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+        
+        .inner-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .button-red { background-color: #d9232e; }
+        .button-blue { background-color: #2852e3; }
+        .button-orange { background-color: #e37222; }
+        .button-cyan { background-color: #22c5c5; }
+        
+        /* 按钮文字 - 字体更清晰 */
+        .button-text {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+            font-weight: bold;
+            font-size: 24px; /* 增大字体 */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            letter-spacing: 1px; /* 增加字母间距 */
+        }
+        
+        .button-text.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        /* 动画定义 - 更快的动画速度 */
+        @keyframes shake {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        
+        @keyframes bottleShake {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-18px); }
+        }
+        
+        .inner-button.shake {
+            animation: shake 0.3s ease-in-out 2; /* 按钮上下晃动两次 */
+        }
+        
+        .bottle-container.shake {
+            animation: bottleShake 0.3s ease-in-out 2; /* 瓶子上下抖动两次 */
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="math-background"></div>
+        
+        <!-- 瓶子区域 -->
+        <div class="bottles-container">
+            <div class="bottle">
+                <div class="bottle-container">
+                    <div class="top-cap"></div>
+                    <div class="middle-frame">
+                        <div class="gray-body">
+                            <div class="inner-button button-red">
+                                <div class="button-text">次</div>
+                            </div>
+                            <div class="bottom-scale">
+                                <div class="scale-lines">
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bottle-shadow"></div>
+                </div>
+            </div>
+            
+            <div class="bottle">
+                <div class="bottle-container">
+                    <div class="top-cap"></div>
+                    <div class="middle-frame">
+                        <div class="gray-body">
+                            <div class="inner-button button-blue">
+                                <div class="button-text">回</div>
+                            </div>
+                            <div class="bottom-scale">
+                                <div class="scale-lines">
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bottle-shadow"></div>
+                </div>
+            </div>
+            
+            <div class="bottle">
+                <div class="bottle-container">
+                    <div class="top-cap"></div>
+                    <div class="middle-frame">
+                        <div class="gray-body">
+                            <div class="inner-button button-orange">
+                                <div class="button-text">予</div>
+                            </div>
+                            <div class="bottom-scale">
+                                <div class="scale-lines">
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bottle-shadow"></div>
+                </div>
+            </div>
+            
+            <div class="bottle">
+                <div class="bottle-container">
+                    <div class="top-cap"></div>
+                    <div class="middle-frame">
+                        <div class="gray-body">
+                            <div class="inner-button button-cyan">
+                                <div class="button-text">告</div>
+                            </div>
+                            <div class="bottom-scale">
+                                <div class="scale-lines">
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                    <div class="scale-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bottle-shadow"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const buttons = document.querySelectorAll('.inner-button');
+            const texts = document.querySelectorAll('.button-text');
+            const bottles = document.querySelectorAll('.bottle-container');
+            let clickCount = 0;
+            
+            // 重置所有元素状态
+            function resetAll() {
+                buttons.forEach(btn => btn.classList.remove('shake'));
+                texts.forEach(text => text.classList.remove('visible'));
+                bottles.forEach(bottle => bottle.classList.remove('shake'));
+            }
+            
+            // 点击事件处理 - 更快的响应
+            document.body.addEventListener('click', () => {
+                clickCount++;
+                const step = clickCount % 6;
+                
+                // 重置所有状态
+                if (step === 0) {
+                    resetAll();
+                    return;
+                }
+                
+                // 处理第1-4次点击：按钮晃动并显示文字
+                if (step >= 1 && step <= 4) {
+                    const index = step - 1;
+                    
+                    // 移除之前的动画类
+                    buttons.forEach(btn => btn.classList.remove('shake'));
+                    
+                    // 立即添加按钮晃动动画
+                    buttons[index].classList.add('shake');
+                    
+                    // 更快地显示文字
+                    setTimeout(() => {
+                        texts[index].classList.add('visible');
+                    }, 300); // 300ms后显示文字，比之前更快
+                    
+                    // 移除按钮动画类
+                    setTimeout(() => {
+                        buttons[index].classList.remove('shake');
+                    }, 600); // 动画完成后移除类
+                }
+                
+                // 处理第5次点击：所有瓶子晃动两次
+                if (step === 5) {
+                    // 隐藏所有文字
+                    texts.forEach(text => text.classList.remove('visible'));
+                    
+                    // 立即让所有瓶子晃动两次
+                    setTimeout(() => {
+                        bottles.forEach(bottle => {
+                            bottle.classList.add('shake');
+                        });
+                        
+                        // 移除瓶子动画类
+                        setTimeout(() => {
+                            bottles.forEach(bottle => {
+                                bottle.classList.remove('shake');
+                            });
+                        }, 600); // 动画完成后移除类（0.3s * 2次 = 0.6s）
+                    }, 200); // 更短的延迟
+                }
+            });
+        });
+    </script>
+</body>
+</html>
